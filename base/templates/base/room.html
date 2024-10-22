@@ -1,0 +1,13 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<h1>{{room.name}}</h1>
+<small>Created at: {{room.created}}</small>
+<br>
+<small>Hosted by: <a href="/profile/{{room.host.id}}">{{room.host.username}}</a></small>
+
+<p>{{room.description}}</p>
+
+<a href="/update-room/{{room.id}}"><button>Edit Room!</button></a>
+
+{% endblock %}

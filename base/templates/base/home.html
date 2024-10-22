@@ -1,0 +1,17 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<h1>Home Page</h1>
+
+{% comment %} <span><a href="/create-room">Create new room</a></span> {% endcomment %}
+
+
+<h2>Rooms <button style="padding: 5;"><a style="text-decoration: none; font-size: 24px; padding: 0;" href="/create-room"><b>&#43;</b></a></button></h2>
+<div>
+    {%for room in rooms%}
+        <h4><a href="/room/{{room.id}}">{{room.name}}</a></h4>
+    {%endfor%}
+</div>
+
+
+{% endblock %}
