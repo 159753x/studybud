@@ -5,13 +5,47 @@
 
 {% comment %} <span><a href="/create-room">Create new room</a></span> {% endcomment %}
 
+<style>
+    .home-container{
+        display: grid;
+        grid-template-columns: 1fr 7fr;
+        column-gap: 10px;
+    }
+    .home-sidebar{
+        min-width: 150px;
+    }
+</style>
 
-<h2>Rooms <button style="padding: 5;"><a style="text-decoration: none; font-size: 24px; padding: 0;" href="/create-room"><b>&#43;</b></a></button></h2>
-<div>
-    {%for room in rooms%}
-        <h4><a href="/room/{{room.id}}">{{room.name}}</a></h4>
-    {%endfor%}
+<div class="home-container">
+    <div class="home-sidebar">
+        <h3>Browse topics</h3>
+        <hr>
+        <h4><a href="{% url 'home' %}">All</a></h4>
+        {% for topic in topics %}
+            <h4><a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}}</a></h4>
+        {% endfor %}
+
+    </div>
+    <div class="home-main">
+        <h2>Rooms <button style="padding: 5;"><a style="text-decoration: none; font-size: 24px; padding: 0;" href="/create-room"><b>&#43;</b></a></button></h2>
+        <div>
+            {% if rooms %}
+            {% for room in rooms %}
+            <h4>
+                <a href="/room/{{room.id}}">{{room.name}}</a>
+                {% if room.topic %}
+                <span>||</span>
+                <small>{{room.topic}}</small>
+                {% endif %}
+            </h4>
+            {% endfor %}
+            {% else %}
+                <h4>-No rooms available-</h4>
+            {% endif %}
+        </div>
+    </div>
 </div>
+
 
 
 {% endblock %}

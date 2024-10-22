@@ -1,27 +1,30 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from . import forms
-from .models import Room
+from .models import Room, Topic
 
 # Create your views here.
 
-rooms = [
-    {'id':1, 'name': 'Python learning'},
-    {'id':2, 'name': 'Django room'},
-    {'id':3, 'name': 'Assembly learning'},
-]
-
 
 def home(request):
-    rooms = Room.objects.all()
-    return render(request, 'base/home.html', context={'rooms': rooms})
+    query = request.GET.get('q')
+    topics = Topic.objects.all()
+
+    if query:
+        rooms = Room.objects.filter(topic__name__icontains = query)
+        return render(request, 'base/home.html', context={'rooms': rooms, 'topics': topics, 'query':query})
+    else:
+        rooms = Room.objects.all()
+    return render(request, 'base/home.html', context={'rooms': rooms, 'topics': topics})
 
 def room(request, id):
     room = Room.objects.get(id = id)
     return render(request, 'base/room.html', {'room': room})
 
-
+@login_required(login_url='login')
 def createRoom(request):
     form = forms.RoomForm()
 
@@ -49,7 +52,14 @@ def updateRoom(request, pk):
             updated_room.save()
 
         return redirect('/')
-
-            
-
     return render(request, 'base/room_form.html', {'form':form, 'room':room})
+
+def deleteRoom(request, pk):
+    room = get_object_or_404(Room, id=pk)
+    room.delete()
+
+    
+
+    messages.success(request, "Item deleted successfully.")
+
+    return redirect('home')

@@ -15,16 +15,52 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.urls import path, include
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 
 def profile(request, id):
-    user = User.objects.get(id = id)
-    return render(request, 'profile.html', {'user':user})
+    acc = User.objects.get(id = id)
+    return render(request, 'profile.html', {'acc':acc})
+
+def loginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        try:
+            user = User.objects.get(username=username)
+        except:
+            messages.error(request, "User does not exist")
+            return redirect('/login')
+        
+        user = authenticate(request, username=username, password= password)
+        
+        if user:
+            login(request, user)
+            if request.GET.get('next'):
+                return redirect(request.GET.get('next'))
+            else:
+                return redirect('/')
+        else:
+            messages.error(request, "Wrong password")
+            return redirect('/login')
+        return redirect('/')
+    
+    return render(request, 'login.html')
+
+def logoutPage(request):
+    logout(request)
+    return redirect('/')
+    
 
 urlpatterns = [
+    path('__debug__/', include('debug_toolbar.urls')),
     path('admin/', admin.site.urls),
     path('', include('base.urls')),
-    path('profile/<int:id>/', profile),
+    path('profile/<int:id>/', profile, name='profile'),
+    path('login/', loginPage, name='login'),
+    path('logout/', logoutPage),
 ]

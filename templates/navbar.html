@@ -1,6 +1,46 @@
+<style>
+    .nav-container{
+        display: grid;
+        grid-template-columns: 9fr 1fr;
+    }
+    img{
+     width: 50px;
+     border-radius: 50%;  
+    }
+</style>
+
 <nav>
-    <a href="/">LOGO</a>
+    <div class="nav-container">
+        <div>
+            <span><a href="/">LOGO</a></span>
+            <br><br>
+            {% if request.path == '/' %}
+                <form method="GET" action="/">
+                    {% if query %}
+                    <input type="text" name="q" id="search-bar" placeholder="Search rooms..." value="{{query}}">
+                    {% else %}
+                    <input type="text" name="q" id="search-bar" placeholder="Search rooms...">
+                    {% endif %}
+                </form>
+            {% endif %}
     
-    
+            <!-- <span><a href="/login">Login</a></span> -->
+        </div>
+        <div class="profile">
+            {% load static %}
+            {% if user.is_authenticated %}
+                {% url 'profile' user.id as profile_url %}
+                {% if request.path == profile_url %}
+                <a href="/logout">Logout</a>
+                {% else %}
+                <a href="/profile/{{user.id}}"><img src="{% static 'default_profile.webp' %}" alt="My image"></a>
+                {% endif %}
+            {% else %}
+                {% if request.path != login %}
+                <a href="/login">Login</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
     <hr>
 </nav>
